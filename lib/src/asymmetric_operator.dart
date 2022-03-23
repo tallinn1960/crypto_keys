@@ -173,3 +173,48 @@ Iterable<int> _bigIntToBytes(BigInt v, int length) sync* {
 BigInt _bigIntFromBytes(Iterable<int> bytes) {
   return bytes.fold(BigInt.zero, (a, b) => a * _b256 + BigInt.from(b));
 }
+
+class _KeyDerivator extends Encrypter<Key> with _AsymmetricOperator {
+  _KeyDerivator(Identifier algorithm, Key key) : super._(algorithm, key);
+
+  late final pc.ECDHKDFParameters _parameters;
+  late final int _keyBitLength;
+  late final Uint8List _otherInfo;
+
+  @override
+  pc.KeyDerivator get _algorithm => super._algorithm as pc.KeyDerivator;
+
+  void init(EcPublicKey epk, int keyBitLength,Uint8List otherInfo) {
+    final d = _AsymmetricOperator.createCurveParameters(epk.curve);
+    final pcepk = pc.ECPublicKey(
+        d.curve.createPoint(epk.xCoordinate, epk.yCoordinate), d);
+    _parameters =
+        pc.ECDHKDFParameters(keyParameter.key as pc.ECPrivateKey, pcepk);
+    _keyBitLength = keyBitLength;
+    _otherInfo = otherInfo;
+  }
+
+
+
+  @override
+  Uint8List decrypt(EncryptionResult input) {
+    if (input.data.isEmpty) {
+      // ECDH-ES
+      var ecdh = _algorithm..init(_parameters);
+      var z = ecdh.process(Uint8List(0));
+      var c = pc.HkdfParameters(z, _keyBitLength, _otherInfo);
+      var concatKdf = pc.KeyDerivator('SHA-256/ConcatKDF')..init(c);
+      return concatKdf.process(Uint8List(0));
+    }
+    // TODO: implement decrypt for other ECDH variants
+    throw UnimplementedError();
+  }
+
+  @override
+  EncryptionResult encrypt(Uint8List input,
+      {Uint8List? initializationVector,
+      Uint8List? additionalAuthenticatedData}) {
+    // TODO: implement encrypt
+    throw UnimplementedError();
+  }
+}

@@ -98,6 +98,9 @@ class HybridEncAlgorithms extends Identifier {
     return AlgorithmIdentifier._(
         'enc/hybrid', () => pc.HKDFKeyDerivator(hkdfHash.factory()));
   }
+
+  final ecdh =
+      AlgorithmIdentifier._('enc/hybrid/ecdh', () => pc.KeyDerivator('ECDH'));
 }
 
 class AesEncAlgorithms extends Identifier {
@@ -258,7 +261,6 @@ class _Curves {
 
   /// BP256r1
   final bp256r1 = const Identifier._('curve/BP-256r1');
-
 }
 
 /// An identifier for uniquely identify algorithms and other objects
@@ -347,7 +349,7 @@ class AlgorithmIdentifier<T extends pc.Algorithm> extends Identifier {
     'dir': null,
 
     /// Elliptic Curve Diffie-Hellman Ephemeral Static key agreement using Concat KDF
-    'ECDH-ES': null,
+    'ECDH-ES': algorithms.encryption.hybrid.ecdh,
 
     /// ECDH-ES using Concat KDF and CEK wrapped with 'A128KW'
     'ECDH-ES+A128KW': null,

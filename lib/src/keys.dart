@@ -3,12 +3,22 @@ part of '../crypto_keys.dart';
 /// A cryptographic key
 abstract class Key {
   /// Creates an [Encrypter] using this key and the specified algorithm
-  Encrypter createEncrypter(Identifier algorithm) {
+  Encrypter createEncrypter(Identifier algorithm,
+      {Uint8List? otherInfo, int? keysize, EcPublicKey? ecPublicKey}) {
     if (this is SymmetricKey) {
       return _SymmetricEncrypter(algorithm, this as SymmetricKey);
     }
 
-    return _AsymmetricEncrypter(algorithm, this);
+    if (this is RsaKey) {
+      return _AsymmetricEncrypter(algorithm, this);
+    }
+
+    if (this is EcKey) {
+      ;
+      return _KeyDerivator(algorithm, this)
+        ..init(ecPublicKey!, keysize!, otherInfo!);
+    }
+    throw UnsupportedError("Unknown alg: ${algorithm.name}");
   }
 }
 
