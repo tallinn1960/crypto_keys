@@ -1,9 +1,9 @@
-import '../crypto_keys.dart';
-
 import 'dart:typed_data';
-import 'algorithms.dart';
+
 import 'package:collection/collection.dart';
 import 'package:quiver/core.dart';
+
+import '../crypto_keys.dart';
 
 class RsaPublicKeyImpl extends PublicKey
     with Key

@@ -18,7 +18,7 @@ abstract class Key {
       return _KeyDerivator(algorithm, this)
         ..init(ecPublicKey!, keysize!, otherInfo!);
     }
-    throw UnsupportedError("Unknown alg: ${algorithm.name}");
+    throw UnsupportedError('Unknown alg: ${algorithm.name}');
   }
 }
 
