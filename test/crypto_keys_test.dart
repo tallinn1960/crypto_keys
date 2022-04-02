@@ -1,26 +1,28 @@
-import 'package:test/test.dart';
-import 'package:crypto_keys/crypto_keys.dart';
-import 'dart:typed_data';
 import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:crypto_keys/crypto_keys.dart';
+import 'package:test/test.dart';
 
 void _testSigning(
     KeyPair keyPair, AlgorithmIdentifier algorithm, Uint8List data,
-    [Uint8List? signature, bool? isRandom]) {
+    [Uint8List? signature, bool? isRandom]) async {
   var signer = keyPair.createSigner(algorithm);
   var verifier = keyPair.createVerifier(algorithm);
 
   if (signature != null) {
-    expect(verifier.verify(data, Signature(signature)), isTrue);
+    expect(await verifier.verify(data, Signature(signature)), isTrue);
 
     if (!isRandom!) {
-      expect(signer.sign(data).data, signature);
+      var signature2 = await signer.sign(data);
+      expect(signature2.data, signature);
     }
   }
 
-  var s = signer.sign(data);
-  expect(verifier.verify(data, s), isTrue);
+  var s = await signer.sign(data);
+  expect(await verifier.verify(data, s), isTrue);
   s = Signature(s.data..[0] += 1);
-  expect(verifier.verify(data, s), isFalse);
+  expect(await verifier.verify(data, s), isFalse);
 }
 
 void _testEncryption(

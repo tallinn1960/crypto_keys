@@ -9,14 +9,15 @@ class _SymmetricSignerAndVerifier extends Signer<SymmetricKey>
   pc.Mac get _algorithm => super._algorithm as pc.Mac;
 
   @override
-  Signature sign(List<int> data) {
+  Future<Signature> sign(List<int> data) async {
     data = data is Uint8List ? data : Uint8List.fromList(data);
     _algorithm.init(pc.KeyParameter(key.keyValue));
     return Signature(_algorithm.process(data));
   }
 
   @override
-  bool verify(Uint8List data, Signature signature) => sign(data) == signature;
+  Future<bool> verify(Uint8List data, Signature signature) async =>
+      await sign(data) == signature;
 }
 
 class _SymmetricEncrypter extends Encrypter<SymmetricKey> {

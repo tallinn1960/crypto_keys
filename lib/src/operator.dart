@@ -20,7 +20,7 @@ abstract class Signer<T extends PrivateKey> extends Operator<T> {
       : super._(algorithm as AlgorithmIdentifier<pc.Algorithm>, key);
 
   /// Signs the input [data] using the [key] and [algorithm]
-  Signature sign(List<int> data);
+  Future<Signature> sign(List<int> data);
 }
 
 /// Operator for verifying a signature
@@ -30,7 +30,7 @@ abstract class Verifier<T extends PublicKey> extends Operator<T> {
 
   /// Verifies that [signature] is a valid signature for the input [data] using
   /// the [key] and [algorithm]
-  bool verify(Uint8List data, Signature signature);
+  Future<bool> verify(Uint8List data, Signature signature);
 }
 
 /// Represents the result of signing some data

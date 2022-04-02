@@ -65,7 +65,7 @@ class _AsymmetricSigner extends Signer<PrivateKey>
   pc.Signer get _algorithm => super._algorithm as pc.Signer;
 
   @override
-  Signature sign(List<int> data) {
+  Future<Signature> sign(List<int> data) async {
     data = data is Uint8List ? data : Uint8List.fromList(data);
     _algorithm.init(
         true, pc.ParametersWithRandom(keyParameter, DefaultSecureRandom()));
@@ -105,7 +105,7 @@ class _AsymmetricVerifier extends Verifier<PublicKey>
   pc.Signer get _algorithm => super._algorithm as pc.Signer;
 
   @override
-  bool verify(Uint8List data, Signature signature) {
+  Future<bool> verify(Uint8List data, Signature signature) async {
     if (key is RsaKey) {
       _algorithm.init(false,
           pc.ParametersWithRandom(keyParameter, pc.SecureRandom('Fortuna')));

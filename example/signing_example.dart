@@ -1,7 +1,8 @@
-import 'package:crypto_keys/crypto_keys.dart';
 import 'dart:typed_data';
 
-void main() {
+import 'package:crypto_keys/crypto_keys.dart';
+
+void main() async {
   // Create a key pair from a JWK representation
   var keyPair = KeyPair.fromJwk({
     'kty': 'oct',
@@ -19,7 +20,7 @@ void main() {
 
   // Sign some content, to be integrity protected
   var content = "It's me, really me";
-  var signature = signer.sign("It's me, really me".codeUnits);
+  var signature = await signer.sign("It's me, really me".codeUnits);
 
   print("Signing '$content'");
   print('Signature: ${signature.data}');
@@ -31,7 +32,7 @@ void main() {
   var verifier = publicKey.createVerifier(algorithms.signing.hmac.sha256);
 
   var verified =
-      verifier.verify(Uint8List.fromList(content.codeUnits), signature);
+      await verifier.verify(Uint8List.fromList(content.codeUnits), signature);
   if (verified) {
     print('Verification succeeded');
   } else {
