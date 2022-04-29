@@ -1,5 +1,6 @@
 library crypto_keys.algorithms;
 
+import 'dart:io';
 import 'dart:math' show Random;
 import 'dart:typed_data';
 
@@ -217,6 +218,10 @@ class _RsaSigAlgorithms extends Identifier {
 class _RsaPssAlgorithms extends Identifier {
   _RsaPssAlgorithms() : super._('sig/RSA/PSS');
 
+  final ps256 = AlgorithmIdentifier._('sig/RSA/PSS/digest/SHA-256/mgf1digest/SHA-256/256', () => pc.Signer('SHA-256/PSS'));
+  final ps384 = AlgorithmIdentifier._('sig/RSA/PSS/digest/SHA-384/mgf1digest/SHA-384/384', () => pc.Signer('SHA-384/PSS'));
+  final ps512 = AlgorithmIdentifier._('sig/RSA/PSS/digest/SHA-512/mgf1digest/SHA-512/512', () => pc.Signer('SHA-512/PSS'));
+
   AlgorithmIdentifier withParameters(
       {required AlgorithmIdentifier sigHash,
       required AlgorithmIdentifier mgf1Hash,
@@ -315,13 +320,13 @@ class AlgorithmIdentifier<T extends pc.Algorithm> extends Identifier {
     'BP256R1': algorithms.signing.ecdsa.sha256,
 
     /// RSASSA-PSS using SHA-256 and MGF1 with SHA-256
-    'PS256': null,
+    'PS256': algorithms.signing.rsa.pss.ps256,
 
     /// RSASSA-PSS using SHA-384 and MGF1 with SHA-384
-    'PS384': null,
+    'PS384': algorithms.signing.rsa.pss.ps384,
 
     /// RSASSA-PSS using SHA-512 and MGF1 with SHA-512
-    'PS512': null,
+    'PS512': algorithms.signing.rsa.pss.ps512,
 
     /// No digital signature or MAC
     'none': null,

@@ -67,13 +67,28 @@ class _AsymmetricSigner extends Signer<PrivateKey>
   @override
   Future<Signature> sign(List<int> data) async {
     data = data is Uint8List ? data : Uint8List.fromList(data);
-    _algorithm.init(
-        true, pc.ParametersWithRandom(keyParameter, DefaultSecureRandom()));
+
+    if (algorithm == algorithms.signing.rsa.pss.ps256) {
+      _algorithm.init(true, pc.ParametersWithSaltConfiguration(keyParameter, DefaultSecureRandom(), 32 ));
+    } else if (algorithm == algorithms.signing.rsa.pss.ps384) {
+      _algorithm.init(true, pc.ParametersWithSaltConfiguration(keyParameter, DefaultSecureRandom(), 48 ));
+    } else if (algorithm == algorithms.signing.rsa.pss.ps512) {
+      _algorithm.init(true, pc.ParametersWithSaltConfiguration(keyParameter, DefaultSecureRandom(), 64 ));
+    } else {
+      _algorithm.init(
+          true, pc.ParametersWithRandom(keyParameter, DefaultSecureRandom()));
+    }
 
     if (key is RsaKey) {
-      return Signature(
-          (_algorithm.generateSignature(data) as pc.RSASignature).bytes);
+      var signature = _algorithm.generateSignature(data);
+      if (signature is pc.RSASignature) {
+        return Signature(signature.bytes);
+      }
+      if (signature is pc.PSSSignature) {
+        return Signature(signature.bytes);
+      }
     }
+
     if (key is EcKey) {
       var sig = _algorithm.generateSignature(data) as pc.ECSignature;
 
